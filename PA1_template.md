@@ -55,13 +55,12 @@ stepsbyday <- aggregate (steps ~ date, activity, sum)
 if (!exists('mylocale')) mylocale <- Sys.getlocale (category = "LC_TIME")
 invisible(Sys.setlocale  (category = "LC_TIME", locale = "C"))
 colors <- brewer.pal(5, "Set1") # Nice colors palette
-h1 <- ggplot (data = stepsbyday, aes(x = steps)) +
+ggplot (data = stepsbyday, aes(x = steps)) +
     geom_histogram(binwidth = max(stepsbyday$steps)%/%10, col = colors[2], fill = colors[5]) +
     labs (y = "Frequency, number of days", x = "Number of steps done")
-h1
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![plot of chunk activityHistogram](figure/activityHistogram-1.png) 
 
 Calculate and report the mean and median total number of steps taken per day.
 
@@ -78,14 +77,13 @@ Make a time series plot of the 5-minute interval (x-axis) and the average number
 ```r
 library(scales) #for date_format()
 stepsbyinterval <- aggregate (steps ~ interval + intervalDT, data = activity, FUN = mean)
-p1 <- ggplot (data = stepsbyinterval, aes(x = intervalDT, y = steps)) +
+ggplot (data = stepsbyinterval, aes(x = intervalDT, y = steps)) +
      geom_line(size = 1.5, col = colors[5]) +
      scale_x_datetime(labels = date_format("%H:%M")) +
      labs (x = "Time, 5-minute interval", y = "Average number of steps")
-p1
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+![plot of chunk activityTimeseries](figure/activityTimeseries-1.png) 
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -126,13 +124,12 @@ Make a histogram of the total number of steps taken each day, calculate and repo
 
 ```r
 imputedbyday <- aggregate (steps ~ date, imputed, sum)
-h2 <- ggplot (data = imputedbyday, aes(x = steps)) +
+ggplot (data = imputedbyday, aes(x = steps)) +
     geom_histogram(binwidth = max(imputedbyday$steps)%/%10, col = colors[5], fill = colors[2]) +
     labs (x = "Time, 5-minute interval", y = "Average number of steps, no NA's")
-h2
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk imputedHistogram](figure/imputedHistogram-1.png) 
 
 ```r
 imputedmean <- as.character(round(mean(imputedbyday$steps),1))
@@ -155,26 +152,20 @@ Make a panel plot containing a time series plot of the 5-minute interval (x-axis
 
 ```r
 imputedbyinterval <- aggregate (steps ~ interval+intervalDT+weekday, imputed, mean)
-p2 <- ggplot(imputedbyinterval, aes(x = intervalDT, y = steps)) + 
+ggplot(imputedbyinterval, aes(x = intervalDT, y = steps)) + 
     geom_line(size = 0.8, col = colors[2]) +
     scale_x_datetime(labels = date_format("%H:%M")) +
     facet_wrap (~ weekday, ncol = 1) +
     labs (x = "Time, 5-minute interval", y = "Average number of steps")
-
-p2
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+![plot of chunk imputedTimeseries](figure/imputedTimeseries-1.png) 
 
 From the plot we can see that activity patterns **are different** between weekdays and weekends.
 
-Write all histograms and plots to disk and restore original locale at the end.
+Restore original locale at the end.
 
 ```r
-png(filename = "figure/histogram1.png", 640, 480); h1; dev.off()
-png(filename = "figure/timeseries1.png", 640, 480); p1; dev.off()
-png(filename = "figure/histogram2.png", 640, 480); h2; dev.off()
-png(filename = "figure/timeseries2.png", 640, 480); p2; dev.off()
 Sys.setlocale  (category = "LC_TIME", locale = mylocale) #restore locale
 ```
 
